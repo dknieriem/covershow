@@ -1,0 +1,93 @@
+<div class="dark">
+  <div class="fluid-container">
+    <div class="covershow relative flex flex-row">
+      <div class="covershow-control__previous"></div>
+      <div class="covershow__carousel">
+        {% for index,item in items %}
+          {% set zindex = '0' %}
+          {% set offset = '0px' %}
+          {% set scale = '0.6' %}
+          {% if index == 0 %}
+            {% set zindex = '5' %}
+            {% set scale = '1.0' %}
+          {% elseif index == 2 or index == items|length - 2 %}
+            {% set zindex = '3' %}
+            {% set offset = (index ==2 ? '16%' : '-16%') %}
+            {% set scale = '0.8014' %}
+          {% elseif index == 1 or index == items|length - 1 %}
+            {% set zindex = '3' %}
+            {% set offset = (index ==2 ? '8%' : '-8%') %}
+            {% set scale = '0.9' %}
+          {% endif %}
+          {% set card_attributes = create_attribute({
+            class: [
+              "covershow-item",
+              index == 0 ? "active",
+              "w-full",
+              "absolute",
+              "rounded-lg",
+              "overflow-hidden",
+              "shadow-inactive-card-depth",
+              "active-class:shadow-card-depth",
+              "transition-all",
+              "duration-200",
+              "ease-out",
+              "!outline-none",
+              "max-medium:relative",
+              "shrink-0",
+              "snap-always",
+              "snap-center",
+              "group",
+              "border",
+              "border-extra-clear",
+            ],
+            "data-index": index,
+            "data-position": index,
+            "data-hash-id": item.hashId,
+            "data-description": item.video_description,
+            "data-cta-title": 'Learn More'|t,
+            "data-cta-url": item.cta_link,
+            style: "z-index" ~ zindex ~ "; transform: translateX(" ~ offset ~ ") scale(" ~ scale ~ ");"
+
+          }) %}
+
+          <div{{ card_attributes }}>
+            <div class="thumbnail w-full h-fit">
+              {{ item.thumbnail }}
+            </div>
+            <div class="video absolute inset-0">{{ item.video }}
+            <div class="meta absolute inset-6">
+              <h4>{{ item.title }}</h4>
+              <div class="text-[12px] tracking-[2px]">
+                <span class="inline-block">{{ index }} / {{ items|length}}</span>
+                <span class="inline-block">{{ item.duration }}</span>
+                <span class="inline-block">
+                  <span class="svg-40 medium:svg-56">{{ include_svg('interaction','play') }}</span>
+                </span>
+              </div>
+            </div>
+            <div class="overlay absolute inset-0"></div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="covershow-control__next"></div>
+    </div>
+    <div class="covershow__dots inline-flex">
+      {% for index,item in items %}
+        <div class="h-[6px] w-[6px] bg-black">
+          <span class="sr-only">{{ index }}</span>
+        </div>
+      {% endfor %}
+    </div>
+    {% block modal %}
+      {% include "@components/covershow/modal" with {
+        description: items[0].description,
+        video: first_video,
+        cta_link: items[0].cta_link
+      } only %}
+    {% endblock modal %}
+  
+  </div>
+</div>
+
+{{ attach_library('theme/covershow-fullwidth') }}
